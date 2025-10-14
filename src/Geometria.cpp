@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iostream>
 #include <cmath>
+#include <numbers>
 
 namespace Geometria {
 
@@ -25,11 +26,11 @@ double norm(const Vector3& v) {
 Vector3 normalize(const Vector3& v) {
     double n = norm(v);
     if (n == 0.0) return {0, 0, 0};
-    return v / n;  // ¡Ahora podemos usar el operador /!
+    return v / n;  
 }
 
 double gradosARadianes(double grados) {
-    return grados * M_PI / 180.0;
+    return grados * std::numbers::pi / 180.0;
 }
 
 void proyectar(const Vector3& pos, const Cilindro& cil, 
@@ -37,8 +38,12 @@ void proyectar(const Vector3& pos, const Cilindro& cil,
     Vector3 a = normalize(cil.eje);
     
     // Vector auxiliar para construir base ortonormal
-    Vector3 w = (std::fabs(a.x) < 0.9) ? Vector3{1, 0, 0} : Vector3{0, 1, 0};
-    Vector3 u = normalize(cross(a, w));
+    // Código original:
+    // Vector3 w = (std::fabs(a.x) < 0.9) ? Vector3{1, 0, 0} : Vector3{0, 1, 0};
+    // Vector3 u = normalize(cross(a, w));
+    // Código modificado para que theta = 0 sea la parte de arriba de la sección 
+    // y theta sea positiva en sentido horario.
+    Vector3 u = Vector3(0, 1, 0);
     Vector3 v = cross(a, u);
     
     Vector3 rel = pos - cil.centro; 
