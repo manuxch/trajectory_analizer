@@ -23,9 +23,12 @@ void AnalizadorDensidad::procesarArchivo(const std::string& filepath) {
     }
     
     // Reiniciar histogramas
-    hist2D = std::vector<std::vector<int>>(NR, std::vector<int>(NTH, 0));
-    histR = std::vector<int>(NR, 0);
-    histTheta = std::vector<int>(NTH, 0);
+    {
+      std::lock_guard<std::mutex> lock(datosMutex);
+      hist2D = std::vector<std::vector<int>>(NR, std::vector<int>(NTH, 0));
+      histR = std::vector<int>(NR, 0);
+      histTheta = std::vector<int>(NTH, 0);
+    }
     
     std::string line;
     size_t num_atoms = 0;
@@ -85,7 +88,7 @@ void AnalizadorDensidad::procesarLineaDatos(const std::string& linea, const Vect
         
         int ir = std::min(static_cast<int>(pr / dr), NR - 1);
         int ith = static_cast<int>((ptheta + M_PI) / dtheta) % NTH;
-        
+        std::lock_guard<std::mutex> lock(datosMutex); 
         hist2D[ir][ith]++;
         histR[ir]++;
         histTheta[ith]++;
